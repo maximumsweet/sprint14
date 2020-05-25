@@ -1,9 +1,12 @@
 /* eslint-disable consistent-return */
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const userModel = require('../models/user');
 const superSecretKey = require('../secret');
+
+const { ObjectId } = mongoose.Types;
 
 module.exports.getUsers = (req, res) => {
   userModel.find({})
@@ -12,7 +15,14 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.getUser = (req, res) => {
-  userModel.findById(req.params.id)
+  const { id } = req.params;
+
+  if (!ObjectId.isValid(id)) {
+    res.status(400).send({ message: 'Невалидный id' });
+    return;
+  }
+
+  userModel.findById({ _id: id })
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'Нет пользователя с таким id' });
@@ -39,7 +49,7 @@ module.exports.createUser = (req, res) => {
     .then((user) => res.status(201).send({
       _id: user._id, name: user.name, about: user.about, avatar: user.avatar, email: user.email,
     }))
-    .catch((err) => ((err.name === 'ValidationError') ? res.status(400).send({ message: err.message }) : res.status(500).send({ message: 'Произошла ошибка' })));
+    .catch((err) => ((err.name === 'ValidationError') ? res.status(400).send({ message: err.message }) : res.status(409).send({ message: err.message })));
 };
 
 module.exports.login = (req, res) => {

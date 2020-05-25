@@ -22,12 +22,14 @@ app.use(bodyParser.json());
 app.post('/signin', login);
 app.post('/signup', createUser);
 
+app.use(auth);
 app.use('/', routerCards);
 app.use('/', routerUsers);
-app.use(auth);
 
 app.all('*', (req, res) => {
   res.status(404).send({ message: 'Запрашиваемый ресурс не найден' });
 });
 
-app.listen(PORT);
+app.listen(PORT, () => {
+  console.log(`Сервис запущен на ${PORT} порту`);
+});
