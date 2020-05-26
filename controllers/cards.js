@@ -1,4 +1,8 @@
+const mongoose = require('mongoose');
+
 const cardModel = require('../models/card');
+
+const { ObjectId } = mongoose.Types;
 
 module.exports.getCards = (req, res) => {
   cardModel.find({})
@@ -16,6 +20,11 @@ module.exports.createCard = (req, res) => {
 
 module.exports.deleteCard = (req, res) => {
   const { cardId } = req.params;
+
+  if (!ObjectId.isValid(cardId)) {
+    res.status(400).send({ message: 'Невалидный id' });
+    return;
+  }
 
   cardModel.findById(cardId)
     .then((card) => {
