@@ -7,7 +7,7 @@ const { ObjectId } = mongoose.Types;
 module.exports.getCards = (req, res) => {
   cardModel.find({})
     .then((cards) => res.status(200).send({ data: cards }))
-    .catch((err) => res.status(404).send({ message: err.message}));
+    .catch((err) => res.status(404).send({ message: err.message }));
 };
 
 module.exports.createCard = (req, res) => {
